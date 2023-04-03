@@ -7,6 +7,7 @@ import CardSearch from './pages/CardSearch';
 import ModifyDeck from './pages/ModifyDeck';
 import SignUp from './pages/SignUp';
 
+
 const App = () => {
   const [userId, setUserId] = useState(null);
 
@@ -20,6 +21,7 @@ const App = () => {
     setUserId(loggedInUserId);
     console.log('User ID set:', loggedInUserId);
   }, []);
+
 
   return (
     <>
