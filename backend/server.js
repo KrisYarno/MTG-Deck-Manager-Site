@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 
 dotenv.config({ path: './backend/.env' });
 const mongoDBUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/magicapp';
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: 'https://magicbros.app/', credentials: true }));
 app.use(express.json());
 
 mongoose.connect(mongoDBUri, {
