@@ -15,6 +15,8 @@ dotenv.config({ path: './backend/.env' });
 const mongoDBUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/magicapp';
 app.use(cors({ origin: 'https://magicbros.app/', credentials: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 mongoose.connect(mongoDBUri, {
   useNewUrlParser: true,
@@ -79,6 +81,7 @@ const sessionConfig = {
     
   
   app.post('/login', passport.authenticate('local'), (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
       res.status(200).json({ message: 'Logged in successfully', user: req.user });
     });    
   
