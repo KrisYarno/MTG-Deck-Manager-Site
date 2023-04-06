@@ -88,10 +88,23 @@ const sessionConfig = {
     });
     
   
-  app.post('/login', passport.authenticate('local'), (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-      res.status(200).json({ message: 'Logged in successfully', user: req.user });
-    });    
+    app.post('/login', (req, res, next) => {
+      passport.authenticate('local', (err, user, info) => {
+        if (err) {
+          return res.status(500).json({ message: 'An error occurred during login.', error: err.message });
+        }
+        if (!user) {
+          return res.status(401).json({ message: 'Invalid credentials. Please try again.' });
+        }
+        req.logIn(user, (err) => {
+          if (err) {
+            return res.status(500).json({ message: 'An error occurred during login.', error: err.message });
+          }
+          return res.status(200).json({ message: 'Logged in successfully', user: req.user });
+        });
+      })(req, res, next);
+    });
+       
   
   app.get('/logout', (req, res) => {
   req.logout();
