@@ -3,6 +3,9 @@ import axios from 'axios';
 import styled from '@emotion/styled';
 import NavigationMenu from './NavigationMenu';
 import api from '../api';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+
 
 
 const CreateDeckContainer = styled.div`
@@ -224,6 +227,7 @@ const ModifyDeck = ({ userId }) => {
   const [deckList, setDeckList] = useState([]);
   const [removeCardPopup, setRemoveCardPopup] = useState({ visible: false, index: null });
   const [deletePopupVisible, setDeletePopupVisible] = useState(false);
+  const { authToken } = useContext(AuthContext);
 
 
   console.log('User ID in ModifyDeck:', userId);
@@ -287,7 +291,11 @@ const ModifyDeck = ({ userId }) => {
   useEffect(() => {
     const fetchDecks = async () => {
       try {
-        const response = await api.get(`/decks?userId=${userId}`);
+        const response = await api.get(`/decks?userId=${userId}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
         console.log("Fetched decks:", response.data);
         setDecks(response.data);
       } catch (error) {
@@ -296,7 +304,8 @@ const ModifyDeck = ({ userId }) => {
     };
   
     fetchDecks();
-  }, [userId]);
+  }, [userId, authToken]);
+  
   
 
   const handleDeckClick = (deck) => {
@@ -308,8 +317,12 @@ const ModifyDeck = ({ userId }) => {
   
 
   const updateDeckInDatabase = async (id, updatedDeck) => {
-    try {
-      const response = await api.put(`/decks/${id}`, updatedDeck);
+      try {
+        const response = await api.put(`/decks/${id}`, updatedDeck, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
       console.log('Deck updated in database:', response.data);
       alert('Deck updated in database: ' + JSON.stringify(response.data));
       
@@ -345,9 +358,12 @@ const ModifyDeck = ({ userId }) => {
       alert("Please select a deck to delete.");
       return;
     }
-  
     try {
-      await api.delete(`/decks/${selectedDeck._id}`);
+      await api.delete(`/decks/${selectedDeck._id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
       alert(`Deck '${selectedDeck.name}' has been deleted.`);
       window.location.reload();
     } catch (error) {

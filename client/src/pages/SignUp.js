@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import UserContext from '../UserContext';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
@@ -39,31 +40,32 @@ const SignInButton = styled.button`
 
 
 const SignUp = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
+  const { user } = useContext(UserContext);
 
-    const handleSignUp = async (e) => {
-        e.preventDefault();
-      
-        try {
-            const response = await axios.post('https://magicbrosbackend.azurewebsites.net/register', {
-                username,
-                password,
-              });              
-      
-          if (response.status === 201) {
-            alert('Account created successfully. Please sign in.');
-            navigate('/');
-          } else {
-            alert('An error occurred. Please try again.');
-          }
-        } catch (error) {
-          console.error('Error during registration:', error);
-          alert('An error occurred. Please try again.');
-        }
-      };
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('https://magicbrosbackend.azurewebsites.net/register', {
+        username,
+        password,
+      });
+
+      if (response.status === 201) {
+        alert('Account created successfully. Please sign in.');
+        navigate('/');
+      } else {
+        alert('An error occurred. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
       
       
 
@@ -71,25 +73,31 @@ const SignUp = () => {
   return (
     <SignInContainer>
       <SignInForm onSubmit={handleSignUp}>
-        <h2>Sign Up</h2>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <SignInButton type="submit">Sign Up</SignInButton>
-        <p>
-        Already have an account? <Link to="/">Sign in here</Link>.
-      </p>
+        {user ? (
+          <p>Welcome, {user.username}! You are already registered.</p>
+        ) : (
+          <>
+            <h2>Sign Up</h2>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <SignInButton type="submit">Sign Up</SignInButton>
+            <p>
+              Already have an account? <Link to="/">Sign in here</Link>.
+            </p>
+          </>
+        )}
       </SignInForm>
     </SignInContainer>
   );

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import UserContext from '../UserContext';
 import styled from '@emotion/styled';
 import { TiThMenuOutline } from 'react-icons/ti';
 
@@ -88,8 +89,12 @@ background-color: #f44336;
 const NavigationMenu = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
 
   const handleSignOut = () => {
+    // Clear the user data
+    setUser(null);
+    // Remove the user data from localStorage
     localStorage.removeItem('user');
     navigate('/');
   };
@@ -110,9 +115,6 @@ const NavigationMenu = () => {
           </MenuItem>
           <MenuItem to="/modify-deck" onClick={() => setMenuOpen(false)}>
             Modify Deck
-          </MenuItem>
-          <MenuItem to="/import-deck" onClick={() => setMenuOpen(false)}>
-            Import Deck
           </MenuItem>
           <SignOutButton onClick={handleSignOut}>Sign Out</SignOutButton>
         </NavigationPane>

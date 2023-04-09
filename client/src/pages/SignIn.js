@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import UserContext from '../UserContext';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
@@ -38,28 +40,25 @@ const SignInButton = styled.button`
 
 
 const SignIn = () => {
-  // Hooks should be called at the top level of the component
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const { loginUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(UserContext);
+
   const handleSignIn = async (e) => {
     e.preventDefault();
-  
+
     try {
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-  
-      const data = await response.json(); // Parse the response JSON
-  
-      if (response.ok && data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user)); // Store the user information in the localStorage
-        navigate('/home');
+      const responseData = await loginUser(username, password);
+
+      if (responseData.success) {
+        setUser({
+          _id: responseData.user._id,
+          username: responseData.user.username,
+          // any other user data you want to store
+        });
       } else {
         alert('Invalid credentials. Please try again.');
       }
@@ -68,6 +67,13 @@ const SignIn = () => {
       alert('An error occurred. Please try again.');
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate('/home');
+    }
+  }, [user, navigate]);
+  
   
 
   return (
